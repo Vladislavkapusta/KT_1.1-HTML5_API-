@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebStorage with HTML Table</title>
+  <style>
+    th, td {
+      padding: 5px;
+      border: 1px solid black;
+    }
+  </style>
+  <script>
+    // ЗАДАНИЕ 1
+    function updateTable() {
+      const tableBody = document.querySelector('tbody');
+      tableBody.innerHTML = '';
+
+      // Читаем данные из текущего хранилища
+      const storage = getStorage();
+      const keys = Object.keys(storage);
+
+      if (keys.length === 0) {
+        // Если данных нет, создаем tr с emptyHeader
+        const emptyRow = document.createElement('tr');
+        const emptyHeader = document.createElement('td');
+        emptyHeader.textContent = 'No data found';
+        emptyHeader.setAttribute('colspan', '3');
+        emptyRow.appendChild(emptyHeader);
+        tableBody.appendChild(emptyRow);
+      } else {
+        // Если есть данные, заполняем таблицу
+        keys.forEach(key => {
+          const value = storage[key];
+
+          const row = document.createElement('tr');
+
+          const keyCell = document.createElement('td');
+          keyCell.textContent = key;
+          row.appendChild(keyCell);
+
+          const valueCell = document.createElement('td');
+          valueCell.textContent = value;
+          row.appendChild(valueCell);
+
+          const deleteCell = document.createElement('td');
+          const deleteButton = document.createElement('span');
+          deleteButton.textContent = 'X';
+          deleteButton.setAttribute('onclick', `deleteItem('${key}')`);
+          deleteCell.appendChild(deleteButton);
+          row.appendChild(deleteCell);
+
+          tableBody.appendChild(row);
+        });
+      }
+    }
+let TableState = localStorage;
+    // ЗАДАНИЕ 2
+    function changeStorage() {
+     if (TableState === localStorage){
+        TableState = sessionStorage
+     } else{
+        TableState = localStorage
+     }
+     console.log(TableState)
+    }
+    function getStorage() {
+      return TableState; 
+      console.log(TableState)
+    }
+    
+
+    // ЗАДАНИЕ 3
+    function saveItem(key, value) {
+      const storage = getStorage();
+      storage.setItem(key, value);
+      updateTable();
+    }
+
+    // ЗАДАНИЕ 4
+    function deleteItem(key) {
+      if (confirm('Вы уверены, что хотите удалить эту запись?')) {
+        const storage = getStorage();
+        storage.removeItem(key);
+        updateTable();
+      }
+    }
+
+    // ЗАДАНИЕ 5
+    function clearStorage() {
+      if (confirm('Вы уверены, что хотите полностью очистить локальное хранилище?')) {
+        const storage = getStorage();
+        storage.clear();
+        updateTable();
+      }
+    }
+
+    // Добавляем функцию updateTable как обработчик события onload текущего окна
+    window.onload = updateTable;
+  </script>
+</head>
+<body>
+  <h1>WebStorage with HTML Table</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Key</th>
+        <th>Value</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Таблица будет заполнена динамически -->
+    </tbody>
+  </table>
+
+  <h2>Add New Item</h2>
+  <form>
+    <label>Key:</label>
+    <input type="text" id="keyInput" required>
+    <br>
+    <label>Value:</label>
+    <input type="text" id="valueInput" required>
+    <br>
+    <input type="button" value="Save" onclick="saveItem(keyInput.value, valueInput.value)">
+  </form>
+
+  <h2>Actions</h2>
+  <button onclick="clearStorage()">Clear Storage</button>
+  <button onclick="changeStorage()">Change Storage</button>
+</body>
+</html>
